@@ -1,0 +1,161 @@
+/* match the reference page width: 1440px max with 4% side gutters */
+main > .section.board-of-directors-container > div {
+  max-width: 1440px;
+  padding: 0 4%;
+}
+
+.board-of-directors {
+  font-family: manrope, sans-serif;
+  font-size: 14px;
+  line-height: 22px;
+  color: #222;
+}
+
+.board-of-directors h1,
+.board-of-directors h2,
+.board-of-directors h3,
+.board-of-directors h4,
+.board-of-directors h5,
+.board-of-directors h6 {
+  font-family: inherit;
+  color: inherit;
+}
+
+/* highlight panel */
+.board-of-directors .board-of-directors-panel {
+  margin: 0 7.68% 100px;
+  padding: 50px;
+  border: 1px solid rgb(34 34 34 / 30%);
+  border-radius: 2px;
+  text-align: center;
+}
+
+.board-of-directors .board-of-directors-panel h2 {
+  margin: 0 0 7px;
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 30px;
+}
+
+.board-of-directors .board-of-directors-panel h3,
+.board-of-directors .board-of-directors-panel p {
+  margin: 0 0 6px;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 24px;
+  letter-spacing: 1px;
+}
+
+.board-of-directors .board-of-directors-panel > :last-child {
+  margin-bottom: 0;
+}
+
+/* grid title */
+.board-of-directors .board-of-directors-title {
+  margin-bottom: 70px;
+  text-align: center;
+}
+
+.board-of-directors .board-of-directors-title > * {
+  margin: 0 0 7px;
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 30px;
+}
+
+/* director cards */
+.board-of-directors .board-of-directors-list {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  column-gap: 30px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.board-of-directors .board-of-directors-card-image picture {
+  display: block;
+}
+
+.board-of-directors .board-of-directors-card-image img {
+  display: block;
+  width: 100%;
+  height: 290px;
+  object-fit: cover;
+}
+
+.board-of-directors .board-of-directors-card-body {
+  margin-bottom: 70px;
+  padding-top: 10px;
+}
+
+.board-of-directors .board-of-directors-card-body > * {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 22px;
+  letter-spacing: 1px;
+}
+
+.board-of-directors .board-of-directors-card-body .board-of-directors-card-name,
+.board-of-directors .board-of-directors-card-body .board-of-directors-card-name strong {
+  font-weight: 700;
+}
+
+/* notes / document links */
+.board-of-directors .board-of-directors-notes p {
+  margin: 0 0 14px;
+  letter-spacing: 0.5px;
+}
+
+.board-of-directors .board-of-directors-notes a:any-link {
+  font-weight: 700;
+  color: #00e;
+  text-decoration: underline;
+}
+
+@media (width <= 991px) {
+  main > .section.board-of-directors-container > div {
+    padding: 0 4.5%;
+  }
+
+  .board-of-directors .board-of-directors-panel {
+    margin: 0 0 50px;
+    padding: 24px;
+  }
+
+  .board-of-directors .board-of-directors-panel h2 {
+    font-size: 22px;
+  }
+
+  .board-of-directors .board-of-directors-panel h3,
+  .board-of-directors .board-of-directors-panel p {
+    font-size: 12px;
+  }
+
+  .board-of-directors .board-of-directors-title {
+    margin-bottom: 30px;
+  }
+
+  .board-of-directors .board-of-directors-title > * {
+    font-size: 22px;
+  }
+
+  .board-of-directors .board-of-directors-list {
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: 6%;
+  }
+
+  .board-of-directors .board-of-directors-card-image img {
+    height: auto;
+    aspect-ratio: 212 / 201;
+  }
+
+  .board-of-directors .board-of-directors-card-body {
+    margin-bottom: 30px;
+  }
+
+  .board-of-directors .board-of-directors-card-body > * {
+    font-size: 12px;
+  }
+}

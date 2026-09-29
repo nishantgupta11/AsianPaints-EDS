@@ -1,0 +1,14 @@
+{
+  "templates": [
+    {
+      "name": "tools",
+      "urls": [
+        "https://www.asianpaints.com/resources/tools/interior-design-solutions-calculator.html"
+      ],
+      "representativeUrl": "https://www.asianpaints.com/resources/tools/interior-design-solutions-calculator.html",
+      "description": "",
+      "blocks": [],
+      "urlPattern": "/resources/tools/*"
+    }
+  ]
+}
