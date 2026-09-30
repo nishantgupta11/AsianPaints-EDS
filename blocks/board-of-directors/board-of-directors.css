@@ -4,6 +4,11 @@ main > .section.board-of-directors-container > div {
   padding: 0 4%;
 }
 
+/* the history background bleeds to the viewport edges */
+main > .section.board-of-directors-container {
+  overflow-x: clip;
+}
+
 .board-of-directors {
   font-family: manrope, sans-serif;
   font-size: 14px;
@@ -19,6 +24,74 @@ main > .section.board-of-directors-container > div {
 .board-of-directors h6 {
   font-family: inherit;
   color: inherit;
+}
+
+/* history */
+.board-of-directors .board-of-directors-history {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin: 0 0 360px;
+  padding: 140px 10% 0 9%;
+}
+
+.board-of-directors .board-of-directors-history::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  z-index: -1;
+  width: 100vw;
+  aspect-ratio: var(--history-bg-ratio, 1366 / 694);
+  transform: translateX(-50%);
+  background: var(--history-bg, none) no-repeat top / 100% auto;
+}
+
+.board-of-directors .board-of-directors-history-heading {
+  margin-top: 30px;
+}
+
+.board-of-directors .board-of-directors-history-heading h5 {
+  margin: 0 0 6px;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 24px;
+}
+
+.board-of-directors .board-of-directors-history-heading h2 {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 36px;
+}
+
+.board-of-directors .board-of-directors-history-image picture {
+  display: inline-block;
+  margin-left: -48%;
+}
+
+.board-of-directors .board-of-directors-history-image img {
+  display: block;
+  width: 322px;
+  max-width: none;
+  height: auto;
+}
+
+.board-of-directors .board-of-directors-history-text {
+  padding-top: 30%;
+}
+
+.board-of-directors .board-of-directors-history-text p {
+  width: 130%;
+  margin: 0 0 14px -35%;
+  font-size: 13px;
+  line-height: 26px;
+  letter-spacing: 0.5px;
+}
+
+.board-of-directors .board-of-directors-history-text > :last-child {
+  margin-bottom: 0;
 }
 
 /* highlight panel */
@@ -44,10 +117,6 @@ main > .section.board-of-directors-container > div {
   font-weight: 500;
   line-height: 24px;
   letter-spacing: 1px;
-}
-
-.board-of-directors .board-of-directors-panel > :last-child {
-  margin-bottom: 0;
 }
 
 /* grid title */
@@ -114,7 +183,290 @@ main > .section.board-of-directors-container > div {
   text-decoration: underline;
 }
 
+/* corporate information tabs */
+.board-of-directors .board-of-directors-tabs {
+  display: grid;
+  grid-template-columns: 25% 75%;
+  align-items: start;
+  margin-top: 90px;
+  padding-top: 60px;
+}
+
+.board-of-directors .board-of-directors-tablist {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-top: 40px;
+}
+
+.board-of-directors .board-of-directors-tab {
+  margin: 0 0 50px;
+  padding: 0 15px 0 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 13px;
+  text-align: left;
+  text-transform: uppercase;
+  color: #373737;
+  opacity: 0.5;
+  cursor: pointer;
+}
+
+.board-of-directors .board-of-directors-tab[aria-selected='true'] {
+  color: #222;
+  opacity: 1;
+}
+
+.board-of-directors .board-of-directors-drawer {
+  display: none;
+}
+
+.board-of-directors .board-of-directors-tabpanel {
+  padding: 30px 20px;
+  background: #fff;
+}
+
+.board-of-directors .board-of-directors-tabpanel[hidden] {
+  display: none;
+}
+
+.board-of-directors .board-of-directors-tabpanel-title {
+  margin: 0 0 20px;
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 38px;
+  text-align: center;
+}
+
+.board-of-directors .board-of-directors-item {
+  padding: 30px 0;
+  border-bottom: 1px solid #cacbcc;
+}
+
+.board-of-directors .board-of-directors-item-question {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  list-style: none;
+  color: #373737;
+  cursor: pointer;
+}
+
+.board-of-directors .board-of-directors-item-question::-webkit-details-marker {
+  display: none;
+}
+
+.board-of-directors .board-of-directors-item-label {
+  max-width: 85%;
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 23.4px;
+}
+
+.board-of-directors .board-of-directors-item-icon {
+  position: relative;
+  top: 13px;
+  flex: none;
+  width: 12px;
+  height: 12px;
+}
+
+.board-of-directors .board-of-directors-item-icon::before,
+.board-of-directors .board-of-directors-item-icon::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 13px;
+  height: 2px;
+  background: #2f2f2f;
+  transform: translate(-50%, -50%);
+}
+
+.board-of-directors .board-of-directors-item-icon::after {
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+
+.board-of-directors .board-of-directors-item[open] .board-of-directors-item-icon {
+  top: 0;
+  width: 48px;
+  height: 48px;
+  margin-right: -19px;
+  border-radius: 50%;
+  background: #efefef;
+}
+
+.board-of-directors .board-of-directors-item[open] .board-of-directors-item-icon::before {
+  width: 15px;
+  height: 1.5px;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.board-of-directors .board-of-directors-item[open] .board-of-directors-item-icon::after {
+  width: 15px;
+  height: 1.5px;
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.board-of-directors .board-of-directors-item-answer {
+  width: 92%;
+}
+
+.board-of-directors .board-of-directors-item-answer > * {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 21px;
+  letter-spacing: 0.5px;
+  color: #53565a;
+}
+
+.board-of-directors .board-of-directors-item-answer a:any-link {
+  color: #00e;
+  text-decoration: underline;
+}
+
 @media (width <= 991px) {
+  .board-of-directors .board-of-directors-history {
+    display: block;
+    margin-bottom: 164px;
+    padding: 55px 0 0;
+  }
+
+  .board-of-directors .board-of-directors-history-heading {
+    margin-top: 0;
+    text-align: center;
+  }
+
+  .board-of-directors .board-of-directors-history-heading h5 {
+    margin-bottom: 4px;
+    font-size: 12px;
+  }
+
+  .board-of-directors .board-of-directors-history-heading h2 {
+    font-size: 22px;
+    line-height: 24px;
+  }
+
+  .board-of-directors .board-of-directors-history-image {
+    margin-top: 16px;
+    text-align: center;
+  }
+
+  .board-of-directors .board-of-directors-history-image picture {
+    margin-left: 0;
+  }
+
+  .board-of-directors .board-of-directors-history-image img {
+    width: auto;
+    height: 292px;
+    margin: 0 auto;
+  }
+
+  .board-of-directors .board-of-directors-history-text {
+    margin-top: 41px;
+    padding-top: 0;
+  }
+
+  .board-of-directors .board-of-directors-history-text p {
+    width: 100%;
+    margin-left: 0;
+    font-size: 14px;
+  }
+
+  .board-of-directors .board-of-directors-tabs {
+    display: block;
+    margin-top: 168px;
+    padding: 0 44px;
+  }
+
+  .board-of-directors .board-of-directors-tablist {
+    display: none;
+  }
+
+  .board-of-directors .board-of-directors-drawer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: calc(100% + 40px);
+    margin: 0 -20px;
+    padding: 18px 20px;
+    border: 0;
+    border-radius: 0;
+    background: #f8f8f8;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 30px;
+    letter-spacing: 1.08px;
+    text-align: left;
+    text-transform: uppercase;
+    color: #373737;
+    cursor: pointer;
+  }
+
+  .board-of-directors .board-of-directors-drawer[aria-expanded='true'] {
+    color: #222;
+  }
+
+  .board-of-directors .board-of-directors-drawer::after {
+    content: '';
+    flex: none;
+    width: 7px;
+    height: 7px;
+    margin: 0 4px 4px 12px;
+    border-right: 1px solid currentcolor;
+    border-bottom: 1px solid currentcolor;
+    transform: rotate(45deg);
+  }
+
+  .board-of-directors .board-of-directors-drawer[aria-expanded='true']::after {
+    margin-bottom: -4px;
+    transform: rotate(-135deg);
+  }
+
+  .board-of-directors .board-of-directors-tabpanel {
+    padding: 4px 0 21px;
+    background: none;
+  }
+
+  .board-of-directors .board-of-directors-tabpanel-title {
+    margin-bottom: 10px;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 28px;
+    text-align: left;
+  }
+
+  .board-of-directors .board-of-directors-item-label {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 24px;
+  }
+
+  .board-of-directors .board-of-directors-item-icon {
+    top: 11px;
+  }
+
+  .board-of-directors .board-of-directors-item[open] .board-of-directors-item-icon {
+    margin: 0 -15px 0 0;
+  }
+
+  .board-of-directors .board-of-directors-item-answer {
+    width: 100%;
+    padding-top: 10px;
+  }
+
+  .board-of-directors .board-of-directors-item-answer > * {
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 18px;
+  }
+
   main > .section.board-of-directors-container > div {
     padding: 0 4.5%;
   }
