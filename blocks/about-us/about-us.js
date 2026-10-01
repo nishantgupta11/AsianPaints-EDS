@@ -95,7 +95,7 @@ function applyBackground(history, cell) {
 }
 
 function buildHistory(rowCells) {
-  const history = createElement('div', 'board-of-directors-history');
+  const history = createElement('div', 'about-us-history');
 
   // [heading] | [illustration] | [text] | [optional background image]
   const imageCells = rowCells.filter(findImage);
@@ -108,40 +108,69 @@ function buildHistory(rowCells) {
   const before = imageIndex === -1 ? cells.slice(0, 1) : cells.slice(0, imageIndex + 1);
   const after = imageIndex === -1 ? cells.slice(1) : cells.slice(imageIndex + 1);
 
-  history.append(mergeCells(before, 'board-of-directors-history-heading'));
-  if (picture) history.append(createElement('div', 'board-of-directors-history-image', picture));
-  history.append(mergeCells(after, 'board-of-directors-history-text'));
+  history.append(mergeCells(before, 'about-us-history-heading'));
+  if (picture) history.append(createElement('div', 'about-us-history-image', picture));
+  history.append(mergeCells(after, 'about-us-history-text'));
   return history;
 }
 
 function buildCard(cells) {
   const picture = takePicture(cells, [{ media: '(min-width: 992px)', width: '750' }, { width: '400' }]);
-  const body = mergeCells(cells, 'board-of-directors-card-body');
+  const body = mergeCells(cells, 'about-us-card-body');
 
   // the name is the first heading, or the first paragraph when authors used bold text
   const name = body.querySelector(HEADINGS) || body.querySelector('p');
-  name?.classList.add('board-of-directors-card-name');
-  body.querySelectorAll('p:not(.board-of-directors-card-name)')
-    .forEach((p) => p.classList.add('board-of-directors-card-role'));
+  name?.classList.add('about-us-card-name');
+  body.querySelectorAll('p:not(.about-us-card-name)')
+    .forEach((p) => p.classList.add('about-us-card-role'));
 
-  const card = createElement('li', 'board-of-directors-card');
-  if (picture) card.append(createElement('div', 'board-of-directors-card-image', picture));
+  const card = createElement('li', 'about-us-card');
+  if (picture) card.append(createElement('div', 'about-us-card-image', picture));
   card.append(body);
   return card;
 }
 
+/**
+ * Restores tables in answers: the content pipeline drops colspan, so rows with only
+ * a first-cell label (e.g. a region) become full-width group rows again.
+ * @param {Element} answer The answer element
+ */
+function decorateTables(answer) {
+  answer.querySelectorAll('table').forEach((table) => {
+    const rows = [...table.querySelectorAll('tr')];
+    const columns = Math.max(...rows.map((row) => row.children.length));
+    table.dataset.columns = columns;
+    rows.forEach((row) => {
+      const [first, ...rest] = [...row.children];
+      if (!first || !rest.length) return;
+      const label = first.textContent.trim();
+      if (label && rest.every((cell) => !cell.textContent.trim())) {
+        rest.forEach((cell) => cell.remove());
+        first.colSpan = columns;
+        row.classList.add('about-us-table-group');
+      }
+    });
+    // wide tables scroll inside the panel instead of widening the page
+    const scroller = createElement('div', 'about-us-table');
+    table.replaceWith(scroller);
+    scroller.append(table);
+  });
+}
+
 function buildItem(cells, group) {
   const [question, ...answer] = cells;
-  const details = createElement('details', 'board-of-directors-item');
+  const details = createElement('details', 'about-us-item');
   details.name = group;
   const summary = createElement(
     'summary',
-    'board-of-directors-item-question',
-    createElement('span', 'board-of-directors-item-label', question?.textContent.trim() || ''),
-    createElement('span', 'board-of-directors-item-icon'),
+    'about-us-item-question',
+    createElement('span', 'about-us-item-label', question?.textContent.trim() || ''),
+    createElement('span', 'about-us-item-icon'),
   );
   summary.lastElementChild.setAttribute('aria-hidden', 'true');
-  details.append(summary, mergeCells(answer, 'board-of-directors-item-answer'));
+  const body = mergeCells(answer, 'about-us-item-answer');
+  decorateTables(body);
+  details.append(summary, body);
 
   // one open item per tab (fallback for browsers without exclusive <details name>)
   details.addEventListener('toggle', () => {
@@ -160,29 +189,29 @@ function buildItem(cells, group) {
  */
 function buildTabs(tabs) {
   instance += 1;
-  const id = `board-of-directors-${instance}`;
-  const wrapper = createElement('div', 'board-of-directors-tabs');
-  const tablist = createElement('div', 'board-of-directors-tablist');
+  const id = `about-us-${instance}`;
+  const wrapper = createElement('div', 'about-us-tabs');
+  const tablist = createElement('div', 'about-us-tablist');
   tablist.setAttribute('role', 'tablist');
-  const panels = createElement('div', 'board-of-directors-tabpanels');
+  const panels = createElement('div', 'about-us-tabpanels');
 
   const parts = tabs.map((tab, i) => {
-    const button = createElement('button', 'board-of-directors-tab', tab.label);
+    const button = createElement('button', 'about-us-tab', tab.label);
     button.type = 'button';
     button.id = `${id}-tab-${i}`;
     button.setAttribute('role', 'tab');
     button.setAttribute('aria-controls', `${id}-panel-${i}`);
 
-    const drawer = createElement('button', 'board-of-directors-drawer', tab.label);
+    const drawer = createElement('button', 'about-us-drawer', tab.label);
     drawer.type = 'button';
     drawer.setAttribute('aria-controls', `${id}-panel-${i}`);
 
-    const panel = createElement('div', 'board-of-directors-tabpanel');
+    const panel = createElement('div', 'about-us-tabpanel');
     panel.id = `${id}-panel-${i}`;
     panel.setAttribute('role', 'tabpanel');
     panel.setAttribute('aria-labelledby', button.id);
-    if (tab.title) panel.append(createElement('h3', 'board-of-directors-tabpanel-title', tab.title));
-    panel.append(createElement('div', 'board-of-directors-accordion', ...tab.items));
+    if (tab.title) panel.append(createElement('h3', 'about-us-tabpanel-title', tab.title));
+    panel.append(createElement('div', 'about-us-accordion', ...tab.items));
 
     tablist.append(button);
     panels.append(drawer, panel);
@@ -260,7 +289,7 @@ export default function decorate(block) {
       parts.push(buildHistory(cells));
     } else if (type === 'director') {
       if (!list) {
-        list = createElement('ul', 'board-of-directors-list');
+        list = createElement('ul', 'about-us-list');
         parts.push(list);
       }
       list.append(buildCard(cells));
@@ -272,9 +301,9 @@ export default function decorate(block) {
       tabs = tabs || [];
       if (!tabs.length) tabs.push({ label: '', title: '', items: [] });
       const tab = tabs[tabs.length - 1];
-      tab.items.push(buildItem(cells, `board-of-directors-${instance + 1}-${tabs.length}`));
+      tab.items.push(buildItem(cells, `about-us-${instance + 1}-${tabs.length}`));
     } else {
-      const el = mergeCells(cells, `board-of-directors-${type}`);
+      const el = mergeCells(cells, `about-us-${type}`);
       if (el.childNodes.length) parts.push(el);
     }
   });
