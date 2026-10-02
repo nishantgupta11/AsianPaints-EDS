@@ -392,14 +392,14 @@ main > .section.cwap-mobile-app-container > div {
     left: -5px;
     width: 26px;
     height: 26px;
-    background-image: url('/icons/carousel-prev.svg');
+    background-image: url('/icons/round-black-prev-arrow.svg');
   }
 
   .cwap-mobile-app .cwap-carousel-next {
     right: -10px;
     width: 30px;
     height: 30px;
-    background-image: url('/icons/carousel-next.svg');
+    background-image: url('/icons/round-black-next-arrow.svg');
   }
 
   .cwap-mobile-app .cwap-carousel-prev[hidden],
