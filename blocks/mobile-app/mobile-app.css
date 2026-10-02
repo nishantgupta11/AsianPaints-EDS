@@ -718,3 +718,36 @@ main > .section.cwap-mobile-app-container > div {
     gap: 15%;
   }
 }
+
+/* authored phone frame (as on the reference page): the frame image is the media
+   background and the video plays on top of it, inside the frame's screen area */
+.cwap-banner .cwap-banner-media.has-frame {
+  border: 0;
+  border-radius: 20px;
+  background: var(--cwap-frame-mobile) center / contain no-repeat;
+  box-shadow: none;
+}
+
+.cwap-banner .cwap-banner-media.has-frame .cwap-banner-video {
+  position: absolute;
+  top: 2.26%;
+  left: 5.65%;
+  width: 89.27%;
+  height: 95.48%;
+  border-radius: 12.66% / 5.92%;
+}
+
+@media (width >= 900px) {
+  .cwap-banner .cwap-banner-media.has-frame {
+    aspect-ratio: 287 / 575;
+    background-image: var(--cwap-frame-desktop);
+  }
+
+  .cwap-banner .cwap-banner-media.has-frame .cwap-banner-video {
+    top: 2.09%;
+    left: 5.57%;
+    width: 89.33%;
+    height: 95.7%;
+    border-radius: 12.9% / 6%;
+  }
+}

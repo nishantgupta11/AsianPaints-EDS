@@ -88,7 +88,7 @@ function createVideo(className, label) {
  *   Play store    | store badge image | store link | QR code image (optional)
  *   App store     | store badge image | store link | QR code image (optional)
  *                   (store rows render in authored order)
- *   Video         | link to the video file
+ *   Video         | link to the video file | desktop phone frame | mobile phone frame (optional)
  *
  * @param {Element} block The block element
  */
@@ -167,7 +167,24 @@ function buildStore(cells) {
   return item;
 }
 
-function buildVideo(cell) {
+/** Optimized URL for an authored image used as a CSS background. */
+function imageUrl(img, width) {
+  const url = new URL(img.getAttribute('src'), window.location.href);
+  if (url.pathname.includes('media_')) {
+    url.searchParams.set('width', width);
+    url.searchParams.set('format', 'webply');
+    url.searchParams.set('optimize', 'medium');
+  }
+  return url.href;
+}
+
+/**
+ * Video row: Video | link to the video file | desktop phone frame image |
+ * mobile phone frame image (optional, defaults to the desktop frame).
+ * The video plays on top of the frame image, inside its screen area.
+ */
+function buildVideo(row) {
+  const [, cell, ...frameCells] = [...row.children];
   const src = getLink(cell);
   if (!src) return null;
 
@@ -176,6 +193,15 @@ function buildVideo(cell) {
 
   const media = document.createElement('div');
   media.className = 'cwap-banner-media';
+
+  const [desktopFrame, mobileFrame = desktopFrame] = frameCells
+    .map((frameCell) => frameCell.querySelector('img'))
+    .filter(Boolean);
+  if (desktopFrame) {
+    media.classList.add('has-frame');
+    media.style.setProperty('--cwap-frame-desktop', `url('${imageUrl(desktopFrame, '750')}')`);
+    media.style.setProperty('--cwap-frame-mobile', `url('${imageUrl(mobileFrame, '400')}')`);
+  }
 
   const video = document.createElement('video');
   video.className = 'cwap-banner-video';
@@ -281,8 +307,8 @@ function decorateBanner(block) {
 
   inner.append(content);
 
-  const videoCell = valueCell('video');
-  const media = videoCell ? buildVideo(videoCell) : null;
+  const videoRow = byLabel('video');
+  const media = videoRow ? buildVideo(videoRow) : null;
   if (media) inner.append(media);
 
   const bgRow = byLabel('background');
