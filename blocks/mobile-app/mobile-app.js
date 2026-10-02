@@ -4,7 +4,7 @@ import { createOptimizedPicture } from '../../scripts/aem.js';
 const AUTOPLAY_DELAY = 3500;
 
 // row types an author can name in the first cell
-const KEYS = ['carousel', 'slide'];
+const KEYS = ['carousel', 'slide', 'download', 'store'];
 
 let instance = 0;
 
@@ -156,20 +156,97 @@ function buildCarousel(heading, slides) {
 }
 
 /**
+ * Loads and plays the video only once the section is close to the viewport.
+ * @param {HTMLVideoElement} video The video element
+ * @param {string} src The video URL
+ */
+function lazyLoadVideo(video, src) {
+  const load = () => {
+    if (video.src) return;
+    video.src = src;
+    video.play?.().catch(() => { /* autoplay can be blocked; controls stay available */ });
+  };
+  if (!('IntersectionObserver' in window)) { load(); return; }
+  const observer = new IntersectionObserver((entries) => {
+    if (entries.some((entry) => entry.isIntersecting)) {
+      observer.disconnect();
+      load();
+    }
+  }, { rootMargin: '200px' });
+  observer.observe(video);
+}
+
+/**
+ * Builds the "Download our visualizer app" band from
+ * download | [logo] | text | video link, followed by store | [badge] | store link rows.
+ * @param {Element[]} cells The authored cells after the row name
+ * @param {Element[][]} stores The cells of each store row
+ * @returns {Element} The download band
+ */
+function buildDownload(cells, stores) {
+  const logoImg = cells.find((cell) => cell.querySelector('img'))?.querySelector('img');
+  const textCell = cells.find((cell) => !cell.querySelector('img, a') && cell.textContent.trim());
+  const videoLink = cells.map((cell) => cell.querySelector('a')).find(Boolean);
+
+  const text = createElement('div', 'mobile-app-download-text');
+  if (logoImg) {
+    const logo = optimize(logoImg, [{ width: '500' }]);
+    logo.classList.add('mobile-app-download-logo');
+    text.append(logo);
+  }
+  if (textCell) text.append(createElement('p', 'mobile-app-download-label', textCell.textContent.trim()));
+
+  const links = createElement('div', 'mobile-app-download-stores');
+  stores.forEach((storeCells) => {
+    const badge = storeCells.find((cell) => cell.querySelector('img'))?.querySelector('img');
+    const href = storeCells.map((cell) => cell.querySelector('a')?.href).find(Boolean);
+    if (!badge || !href) return;
+    const link = createElement('a', '', optimize(badge, [{ width: '360' }]));
+    link.href = href;
+    link.target = '_blank';
+    link.rel = 'noopener';
+    links.append(link);
+  });
+  if (links.children.length) text.append(links);
+
+  const band = createElement('div', 'mobile-app-download', createElement('div', 'mobile-app-download-panel', text));
+  if (videoLink) {
+    const video = document.createElement('video');
+    video.className = 'mobile-app-download-player';
+    Object.assign(video, {
+      controls: true, autoplay: true, muted: true, loop: true, playsInline: true, preload: 'none',
+    });
+    video.setAttribute('muted', '');
+    video.setAttribute('playsinline', '');
+    video.setAttribute('aria-label', videoLink.textContent.trim() || 'Colour with Asian Paints app video');
+    lazyLoadVideo(video, videoLink.href);
+    band.append(createElement('div', 'mobile-app-download-video', video));
+  }
+  return band;
+}
+
+/**
  * Mobile app page block. Rows are named in their first cell:
  * - carousel | heading (bold text is the gradient line)
  * - slide | [icon] | label | description | [screenshot]
+ * - download | [logo] | text | video link
+ * - store | [badge] | store link (after a download row)
  * @param {Element} block The block element
  */
 export default function decorate(block) {
   const parts = [];
   let heading = null;
   let slides = [];
+  let download = null;
+  let stores = [];
 
   const flush = () => {
     if (heading || slides.length) parts.push(buildCarousel(heading, slides));
+    if (download) parts.push(buildDownload(download, stores));
     heading = null;
     slides = [];
+    download = null;
+    stores = [];
   };
 
   [...block.children].forEach((row) => {
@@ -184,6 +261,11 @@ export default function decorate(block) {
       rest.forEach((cell) => heading.append(...cell.childNodes));
     } else if (key === 'slide') {
       slides.push(buildSlide(rest));
+    } else if (key === 'download') {
+      flush();
+      download = rest;
+    } else if (key === 'store') {
+      stores.push(rest);
     }
   });
   flush();

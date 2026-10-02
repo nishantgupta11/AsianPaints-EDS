@@ -176,9 +176,135 @@ main > .section.mobile-app-container > div {
   background: #fcc666;
 }
 
+/* download band ("Download our visualizer app now") */
+.mobile-app .mobile-app-download {
+  position: relative;
+  box-sizing: border-box;
+  height: 429px;
+  padding: 35px 0;
+  background: #fff;
+}
+
+.mobile-app .mobile-app-download-panel {
+  display: flex;
+  justify-content: flex-end;
+  height: 100%;
+  background: #000;
+}
+
+.mobile-app .mobile-app-download-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 45.5%;
+  height: 100%;
+}
+
+.mobile-app .mobile-app-download-logo {
+  display: block;
+  margin-bottom: 24px;
+}
+
+.mobile-app .mobile-app-download-logo img {
+  display: block;
+  width: 247px;
+  height: auto;
+}
+
+.mobile-app .mobile-app-download-label {
+  margin: 0 0 14px;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 21.86px;
+  letter-spacing: normal;
+  color: #fff;
+}
+
+.mobile-app .mobile-app-download-stores {
+  display: flex;
+  column-gap: 10px;
+}
+
+.mobile-app .mobile-app-download-stores a {
+  display: block;
+}
+
+.mobile-app .mobile-app-download-stores a:focus-visible {
+  outline: 1px solid #fff;
+}
+
+.mobile-app .mobile-app-download-stores picture {
+  display: block;
+}
+
+.mobile-app .mobile-app-download-stores img {
+  display: block;
+  width: 180px;
+  height: auto;
+}
+
+.mobile-app .mobile-app-download-video {
+  position: absolute;
+  top: 0;
+  left: 4.5%;
+  width: 50%;
+  height: 100%;
+}
+
+.mobile-app .mobile-app-download-player {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 20px;
+  object-fit: contain;
+}
+
+@media (width >= 992px) and (width <= 1199px) {
+  .mobile-app .mobile-app-download {
+    padding: 75px 0;
+  }
+}
+
+@media (width >= 1200px) and (width <= 1440px) {
+  .mobile-app .mobile-app-download {
+    padding: 50px 0;
+  }
+}
+
 @media (width <= 991px) {
   .mobile-app .mobile-app-carousel {
     padding: 20px;
+  }
+
+  .mobile-app .mobile-app-download {
+    height: 586px;
+    padding: 0;
+  }
+
+  .mobile-app .mobile-app-download-panel {
+    height: 53%;
+  }
+
+  .mobile-app .mobile-app-download-text {
+    width: 100%;
+  }
+
+  .mobile-app .mobile-app-download-logo {
+    margin-bottom: 20px;
+  }
+
+  .mobile-app .mobile-app-download-stores img {
+    width: 145px;
+  }
+
+  .mobile-app .mobile-app-download-video {
+    position: relative;
+    left: 0;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 47%;
   }
 
   .mobile-app .mobile-app-carousel-heading {
