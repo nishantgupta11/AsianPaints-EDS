@@ -402,6 +402,13 @@ main > .section.cwap-mobile-app-container > div {
     background-image: url('/icons/round-black-next-arrow.svg');
   }
 
+  /* first/last slide (as on the reference) */
+  .cwap-mobile-app .cwap-carousel-prev[aria-disabled='true'],
+  .cwap-mobile-app .cwap-carousel-next[aria-disabled='true'] {
+    opacity: 0.4;
+    cursor: default;
+  }
+
   .cwap-mobile-app .cwap-carousel-prev[hidden],
   .cwap-mobile-app .cwap-carousel-next[hidden] {
     display: none;

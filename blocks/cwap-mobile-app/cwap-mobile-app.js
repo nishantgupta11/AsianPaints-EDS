@@ -66,6 +66,7 @@ function createVideo(className, label) {
   video.setAttribute('aria-label', label);
   return video;
 }
+
 /* ---------------------------------------------------------------------------
  * cwap-carousel
  * ------------------------------------------------------------------------- */
@@ -150,9 +151,13 @@ function buildCarousel(heading, slides) {
     return dot;
   });
 
+  // like the reference, the carousel does not wrap: prev/next are disabled on
+  // the first/last slide and autoplay bounces back and forth between the ends
   let current = 0;
+  let step = 1;
+  const last = slides.length - 1;
   const show = (index) => {
-    current = (index + slides.length) % slides.length;
+    current = Math.max(0, Math.min(index, last));
     slides.forEach((slide, i) => {
       const active = i === current;
       slide.classList.toggle('is-active', active);
@@ -161,6 +166,8 @@ function buildCarousel(heading, slides) {
       if (active) dotButtons[i].setAttribute('aria-current', 'true');
       else dotButtons[i].removeAttribute('aria-current');
     });
+    prev.setAttribute('aria-disabled', current === 0);
+    next.setAttribute('aria-disabled', current === last);
   };
 
   // autoplay, paused while the user interacts and when motion is reduced
@@ -170,11 +177,14 @@ function buildCarousel(heading, slides) {
   const start = () => {
     stop();
     if (reduced.matches || slides.length < 2) return;
-    timer = setInterval(() => show(current + 1), AUTOPLAY_DELAY);
+    timer = setInterval(() => {
+      if (current + step < 0 || current + step > last) step = -step;
+      show(current + step);
+    }, AUTOPLAY_DELAY);
   };
 
-  prev.addEventListener('click', () => { show(current - 1); start(); });
-  next.addEventListener('click', () => { show(current + 1); start(); });
+  prev.addEventListener('click', () => { if (current > 0) { show(current - 1); start(); } });
+  next.addEventListener('click', () => { if (current < last) { show(current + 1); start(); } });
   dotButtons.forEach((dot, i) => dot.addEventListener('click', () => { show(i); start(); }));
   stage.addEventListener('mouseenter', stop);
   stage.addEventListener('mouseleave', start);
