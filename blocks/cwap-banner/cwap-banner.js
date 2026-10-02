@@ -2,8 +2,8 @@ import { createOptimizedPicture } from '../../scripts/aem.js';
 
 /**
  * Code for the CWAP ("Colour With Asian Paints") /mobile-app page. This one JS file (and
- * mobile-app.css) serves both DA blocks, `cwap-banner` (banner section below) and
- * `cwap-mobile-app`; scripts.js maps both block names to this folder (SHARED_BLOCK_CODE).
+ * cwap-banner.css) serves both DA blocks, `cwap-banner` (banner section below) and
+ * `cwap-mobile-app`; scripts.js maps cwap-mobile-app to this folder (SHARED_BLOCK_CODE).
  *
  * cwap-mobile-app: each row is named in its first cell and rows are grouped into
  * sections in authored order:
@@ -72,7 +72,7 @@ function createVideo(className, label) {
 }
 
 /* ---------------------------------------------------------------------------
- * cwap-banner (its own DA block; code shared via SHARED_BLOCK_CODE in scripts.js)
+ * cwap-banner (its own DA block; cwap-mobile-app shares this code via SHARED_BLOCK_CODE)
  * ------------------------------------------------------------------------- */
 
 /**

@@ -145,11 +145,10 @@ function decorateButtons(main) {
 /**
  * Blocks whose JS/CSS live in a shared code folder under /blocks. The block keeps its own
  * name and class (and its section keeps `<name>-container`), only the code is loaded from
- * the target, e.g. both mobile-app page blocks use blocks/mobile-app/mobile-app.{js,css}.
+ * the target, e.g. both /mobile-app page blocks use blocks/cwap-banner/cwap-banner.{js,css}.
  */
 const SHARED_BLOCK_CODE = {
-  'cwap-banner': 'mobile-app',
-  'cwap-mobile-app': 'mobile-app',
+  'cwap-mobile-app': 'cwap-banner',
 };
 
 function shareBlockCode(main) {
