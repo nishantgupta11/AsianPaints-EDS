@@ -253,24 +253,16 @@ main > .section.cwap-mobile-app-container > div {
   position: absolute;
   top: 0;
   left: 4.5%;
-  display: flex;
-  align-items: center;
   width: 50%;
   height: 100%;
-  container-type: size;
 }
 
-/* sized to the video picture itself (largest fit in the slot) so the
-   20px curve rounds all four corners instead of the letterbox around it */
 .cwap-mobile-app .cwap-download-player {
-  --cwap-video-ratio: 1.7778;
-
   display: block;
-  width: min(100cqw, 100cqh * var(--cwap-video-ratio));
-  height: auto;
-  aspect-ratio: var(--cwap-video-ratio);
+  width: 100%;
+  height: 100%;
   border-radius: 20px;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 @media (width >= 992px) and (width <= 1199px) {
