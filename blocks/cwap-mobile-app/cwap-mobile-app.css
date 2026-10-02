@@ -392,14 +392,14 @@ main > .section.cwap-mobile-app-container > div {
     left: -5px;
     width: 26px;
     height: 26px;
-    background-image: url('/icons/round-black-prev-arrow.svg');
+    background-image: url('https://www.asianpaints.com/etc.clientlibs/apcolourcatalogue/clientlibs/clientlib-global/resources/images/round-black-prev-arrow.svg');
   }
 
   .cwap-mobile-app .cwap-carousel-next {
     right: -10px;
     width: 30px;
     height: 30px;
-    background-image: url('/icons/round-black-next-arrow.svg');
+    background-image: url('https://www.asianpaints.com/etc.clientlibs/apcolourcatalogue/clientlibs/clientlib-global/resources/images/round-black-next-arrow.svg');
   }
 
   /* first/last slide (as on the reference) */
