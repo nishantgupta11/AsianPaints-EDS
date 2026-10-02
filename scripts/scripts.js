@@ -143,22 +143,6 @@ function decorateButtons(main) {
 }
 
 /**
- * Blocks whose JS/CSS live in a shared code folder under /blocks. The block keeps its own
- * name and class (and its section keeps `<name>-container`), only the code is loaded from
- * the target, e.g. both /mobile-app page blocks use blocks/cwap-banner/cwap-banner.{js,css}.
- */
-const SHARED_BLOCK_CODE = {
-  'cwap-mobile-app': 'cwap-banner',
-};
-
-function shareBlockCode(main) {
-  main.querySelectorAll('.block[data-block-name]').forEach((block) => {
-    const target = SHARED_BLOCK_CODE[block.dataset.blockName];
-    if (target) block.dataset.blockName = target;
-  });
-}
-
-/**
  * Decorates the main element.
  * @param {Element} main The main element
  */
@@ -168,7 +152,6 @@ export function decorateMain(main) {
   buildAutoBlocks(main);
   decorateSections(main);
   decorateBlocks(main);
-  shareBlockCode(main);
   decorateButtons(main);
 }
 
