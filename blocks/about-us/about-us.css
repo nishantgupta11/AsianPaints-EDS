@@ -4,8 +4,10 @@ main > .section.about-us-container > div {
   padding: 0 4%;
 }
 
-/* the history background bleeds to the viewport edges */
+/* the history background bleeds to the section edges; sizing it from the section
+   (not the viewport) keeps it full width under browser zoom and display scaling */
 main > .section.about-us-container {
+  container-type: inline-size;
   overflow-x: clip;
 }
 
@@ -42,10 +44,13 @@ main > .section.about-us-container {
   top: 0;
   left: 50%;
   z-index: -1;
-  width: 100vw;
+  width: 100cqw;
   aspect-ratio: var(--history-bg-ratio, 1366 / 694);
+
+  /* on narrower laptops the content is taller than the image's natural height */
+  min-height: 100%;
   transform: translateX(-50%);
-  background: var(--history-bg, none) no-repeat top / 100% auto;
+  background: var(--history-bg, none) no-repeat top / 100% 100%;
 }
 
 .about-us .about-us-history-heading {
@@ -382,6 +387,12 @@ main > .section.about-us-container {
     display: block;
     margin-bottom: 164px;
     padding: 55px 0 0;
+  }
+
+  /* mobile keeps the reference behaviour: image at its natural height at the top */
+  .about-us .about-us-history::before {
+    min-height: 0;
+    background-size: 100% auto;
   }
 
   .about-us .about-us-history-heading {
