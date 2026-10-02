@@ -500,6 +500,12 @@ function buildDownload(cells, stores) {
   const band = createElement('div', 'cwap-download', createElement('div', 'cwap-download-panel', text));
   if (videoLink) {
     const video = createVideo('cwap-download-player', videoLink.textContent.trim() || 'Colour with Asian Paints app video');
+    // keep the rounded player box the same shape as the authored video
+    video.addEventListener('loadedmetadata', () => {
+      if (video.videoWidth && video.videoHeight) {
+        video.style.setProperty('--cwap-video-ratio', video.videoWidth / video.videoHeight);
+      }
+    });
     lazyLoadVideo(video, videoLink.href);
     band.append(createElement('div', 'cwap-download-video', video));
   }
