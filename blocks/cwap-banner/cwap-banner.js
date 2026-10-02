@@ -29,7 +29,7 @@ const STORE_LABELS = ['play store', 'app store'];
 // rows that build the banner itself; any other row with images is an image section
 const BANNER_LABELS = ['background', 'title', 'caption', 'download text', ...STORE_LABELS, 'video'];
 
-// the image sections switch to the desktop image here, like the reference page
+// the banner and image sections switch to their desktop layout here, like the reference page
 const FEATURE_DESKTOP = '(min-width: 992px)';
 
 const rowLabel = (row) => row.children[0]?.textContent.trim().toLowerCase().replace(/\s+/g, ' ') || '';
@@ -54,7 +54,7 @@ function getLink(cell) {
 function buildBackground(desktopImg, mobileImg, eager) {
   const picture = createOptimizedPicture(mobileImg.src, '', eager, [{ width: '750' }]);
   const desktop = createOptimizedPicture(desktopImg.src, '', eager, [
-    { media: '(min-width: 900px)', width: '2000' },
+    { media: FEATURE_DESKTOP, width: '2000' },
     { width: '750' },
   ]);
   picture.prepend(...desktop.querySelectorAll('source[media]'));
@@ -188,32 +188,6 @@ function buildVideo(row) {
   return media;
 }
 
-/**
- * On desktop, sizes the banner to the real space left below the header
- * (viewport units can disagree with the window size under OS/browser zoom).
- * Mobile keeps the CSS svh value so the banner doesn't jump with the URL bar.
- */
-function fitToViewport(block) {
-  const desktop = window.matchMedia('(width >= 900px)');
-  let frame;
-  const update = () => {
-    frame = null;
-    if (!desktop.matches) {
-      block.style.removeProperty('--cwap-vh');
-      return;
-    }
-    const header = document.querySelector('header');
-    const headerHeight = header ? header.getBoundingClientRect().height : 0;
-    block.style.setProperty('--cwap-vh', `${Math.round(window.innerHeight - headerHeight)}px`);
-  };
-  const schedule = () => {
-    if (!frame) frame = requestAnimationFrame(update);
-  };
-  update();
-  window.addEventListener('resize', schedule);
-  desktop.addEventListener('change', schedule);
-}
-
 export default function decorate(block) {
   const rows = [...block.children];
   const byLabel = (name) => rows.find((row) => rowLabel(row) === name);
@@ -287,5 +261,4 @@ export default function decorate(block) {
     .filter(Boolean);
 
   block.replaceChildren(hero, ...features);
-  fitToViewport(block);
 }
