@@ -1,0 +1,299 @@
+/* full-bleed bands like the reference page */
+main > .section.mobile-app-container > div {
+  max-width: none;
+  padding: 0;
+}
+
+.mobile-app {
+  font-family: manrope, sans-serif;
+  font-size: 14px;
+  line-height: 22px;
+  letter-spacing: 0.5px;
+  color: #222;
+}
+
+/* carousel ("A sneak peak of What's Inside") */
+.mobile-app .mobile-app-carousel {
+  position: relative;
+  padding-bottom: 31px;
+  background: #fefcf7;
+}
+
+.mobile-app .mobile-app-carousel-heading {
+  position: absolute;
+  top: 150px;
+  left: 18%;
+  z-index: 1;
+}
+
+.mobile-app .mobile-app-carousel-heading > * {
+  margin: 0;
+  font-family: inherit;
+  font-size: 40px;
+  font-weight: 800;
+  line-height: 44px;
+  letter-spacing: 0.5px;
+  color: #000;
+}
+
+.mobile-app .mobile-app-highlight {
+  display: block;
+  background: linear-gradient(270deg, #f8a12e, #be2a1d 50.07%, #45216c 98.1%);
+  background-clip: text;
+  font-size: 54px;
+  font-style: normal;
+  font-weight: 800;
+  line-height: 64.8px;
+  -webkit-text-fill-color: transparent;
+}
+
+.mobile-app .mobile-app-carousel-stage {
+  position: relative;
+}
+
+.mobile-app .mobile-app-carousel-slides {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  padding-left: 18%;
+  overflow: hidden;
+  touch-action: pan-y;
+}
+
+.mobile-app .mobile-app-slide {
+  display: flex;
+  grid-area: 1 / 1;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.5s linear, visibility 0s linear 0.5s;
+}
+
+.mobile-app .mobile-app-slide.is-active {
+  visibility: visible;
+  opacity: 1;
+  transition: opacity 0.5s linear;
+}
+
+.mobile-app .mobile-app-slide-info {
+  display: flex;
+  flex: 0 0 355px;
+  align-items: center;
+  gap: 25px;
+  box-sizing: border-box;
+  padding-top: 80px;
+}
+
+/* white tile with a 1px brand-gradient border */
+.mobile-app .mobile-app-slide-card {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  width: 145px;
+  height: 115px;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #431a80, #ee4137, #feb940);
+}
+
+.mobile-app .mobile-app-slide-card::before {
+  content: '';
+  position: absolute;
+  inset: 1px;
+  z-index: -1;
+  border-radius: 9px;
+  background: #fff;
+}
+
+.mobile-app .mobile-app-slide-card picture {
+  display: block;
+}
+
+.mobile-app .mobile-app-slide-card img {
+  display: block;
+  width: 37.4px;
+  height: 38.3px;
+  object-fit: contain;
+}
+
+.mobile-app .mobile-app-slide-label {
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 14.4px;
+  letter-spacing: normal;
+}
+
+.mobile-app .mobile-app-slide-text {
+  max-width: 185px;
+  margin: 0;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 21.86px;
+  letter-spacing: normal;
+}
+
+.mobile-app .mobile-app-slide-image picture {
+  display: block;
+}
+
+.mobile-app .mobile-app-slide-image img {
+  display: block;
+  width: 666px;
+  max-width: none;
+  height: auto;
+}
+
+.mobile-app .mobile-app-carousel-prev,
+.mobile-app .mobile-app-carousel-next {
+  display: none;
+}
+
+.mobile-app .mobile-app-carousel-dots {
+  position: absolute;
+  top: 465px;
+  left: calc(18% + 5px);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mobile-app .mobile-app-carousel-dot {
+  width: 10px;
+  height: 10px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50px;
+  background: rgb(128 128 128 / 65%);
+  cursor: pointer;
+  transition: width 0.3s ease;
+}
+
+.mobile-app .mobile-app-carousel-dot[aria-current='true'] {
+  width: 40px;
+  background: #fcc666;
+}
+
+@media (width <= 991px) {
+  .mobile-app .mobile-app-carousel {
+    padding: 20px;
+  }
+
+  .mobile-app .mobile-app-carousel-heading {
+    position: static;
+    margin: 14px 0 30px;
+    padding-bottom: 29px;
+    text-align: center;
+  }
+
+  .mobile-app .mobile-app-carousel-heading > * {
+    font-size: 20px;
+    line-height: 27.32px;
+  }
+
+  .mobile-app .mobile-app-highlight {
+    font-size: 32px;
+    line-height: 35.2px;
+  }
+
+  .mobile-app .mobile-app-carousel-slides {
+    height: 520px;
+    padding-left: 0;
+  }
+
+  .mobile-app .mobile-app-slide {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .mobile-app .mobile-app-slide-info {
+    flex: none;
+    justify-content: center;
+    gap: 10px;
+    height: 55px;
+    padding-top: 0;
+  }
+
+  .mobile-app .mobile-app-slide-card {
+    gap: 0 6px;
+    width: 85px;
+    height: 55px;
+  }
+
+  .mobile-app .mobile-app-slide-card img {
+    width: 24px;
+    height: 24px;
+  }
+
+  .mobile-app .mobile-app-slide-label {
+    font-size: 10px;
+    line-height: 18px;
+    letter-spacing: 0.5px;
+  }
+
+  .mobile-app .mobile-app-slide-text {
+    max-width: 108px;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 14.4px;
+  }
+
+  .mobile-app .mobile-app-slide-image img {
+    width: 520px;
+  }
+
+  .mobile-app .mobile-app-carousel-prev,
+  .mobile-app .mobile-app-carousel-next {
+    position: absolute;
+    top: 301.6px;
+    z-index: 1;
+    display: block;
+    padding: 0;
+    border: 0;
+    background: transparent no-repeat 0 0;
+    cursor: pointer;
+    transform: translateY(-50%);
+  }
+
+  .mobile-app .mobile-app-carousel-prev {
+    left: -5px;
+    width: 26px;
+    height: 26px;
+    background-image: url('/icons/carousel-prev.svg');
+  }
+
+  .mobile-app .mobile-app-carousel-next {
+    right: -10px;
+    width: 30px;
+    height: 30px;
+    background-image: url('/icons/carousel-next.svg');
+  }
+
+  .mobile-app .mobile-app-carousel-prev[hidden],
+  .mobile-app .mobile-app-carousel-next[hidden] {
+    display: none;
+  }
+
+  .mobile-app .mobile-app-carousel-dots {
+    top: auto;
+    bottom: 5px;
+    left: 0;
+    justify-content: center;
+    gap: 5px;
+    width: 100%;
+  }
+
+  .mobile-app .mobile-app-carousel-dot {
+    width: 5.4px;
+    height: 5.6px;
+    border-radius: 6px;
+    background: rgb(128 128 128 / 25%);
+  }
+
+  .mobile-app .mobile-app-carousel-dot[aria-current='true'] {
+    width: 21.4px;
+    background: #fcc666;
+  }
+}
