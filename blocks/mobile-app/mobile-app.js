@@ -1,12 +1,31 @@
 import { createOptimizedPicture } from '../../scripts/aem.js';
 
-// time a slide stays visible before the next one fades in (fade itself is 0.5s in CSS)
+/**
+ * Code for the CWAP ("Colour With Asian Paints") /mobile-app page. This one JS file (and
+ * mobile-app.css) serves both DA blocks, `cwap-banner` (banner section below) and
+ * `cwap-mobile-app`; scripts.js maps both block names to this folder (SHARED_BLOCK_CODE).
+ *
+ * cwap-mobile-app: each row is named in its first cell and rows are grouped into
+ * sections in authored order:
+ *
+ * cwap-carousel  ("A sneak peak of What’s Inside")
+ *   carousel      | heading (bold text is the gradient line)
+ *   slide         | [icon] | label | description | [screenshot]
+ *
+ * cwap-download  ("Download our visualizer app now" band)
+ *   download      | [logo] | text | video link
+ *   store         | [badge] | store link
+ */
+
+// time a carousel slide stays visible before the next one fades in (fade is 0.5s in CSS)
 const AUTOPLAY_DELAY = 3500;
 
 // row types an author can name in the first cell
 const KEYS = ['carousel', 'slide', 'download', 'store'];
 
 let instance = 0;
+
+const rowLabel = (row) => row.children[0]?.textContent.trim().toLowerCase().replace(/\s+/g, ' ') || '';
 
 function createElement(tag, className, ...children) {
   const el = document.createElement(tag);
@@ -20,6 +39,266 @@ function optimize(img, breakpoints) {
 }
 
 /**
+ * Loads and plays a video only once it is close to the viewport.
+ * @param {HTMLVideoElement} video The video element
+ * @param {string} src The video URL
+ * @param {Element} target The element to watch
+ */
+function lazyLoadVideo(video, src, target = video) {
+  const load = () => {
+    if (video.src) return;
+    video.src = src;
+    video.play?.().catch(() => { /* autoplay can be blocked; controls stay available */ });
+  };
+  if (!('IntersectionObserver' in window)) { load(); return; }
+  const observer = new IntersectionObserver((entries) => {
+    if (entries.some((entry) => entry.isIntersecting)) {
+      observer.disconnect();
+      load();
+    }
+  }, { rootMargin: '200px' });
+  observer.observe(target);
+}
+
+function createVideo(className, label) {
+  const video = document.createElement('video');
+  video.className = className;
+  Object.assign(video, {
+    controls: true, autoplay: true, muted: true, loop: true, playsInline: true, preload: 'none',
+  });
+  ['muted', 'loop', 'autoplay', 'playsinline'].forEach((attr) => video.setAttribute(attr, ''));
+  video.setAttribute('aria-label', label);
+  return video;
+}
+
+/* ---------------------------------------------------------------------------
+ * cwap-banner (its own DA block; code shared via SHARED_BLOCK_CODE in scripts.js)
+ * ------------------------------------------------------------------------- */
+
+/**
+ * CWAP Banner
+ * "Colour With Asian Paints" app banner: gradient title, caption, store
+ * buttons (with optional QR codes on desktop) and a phone-framed video.
+ *
+ * Authoring model (all content lives in DA; the first cell is the row label):
+ *   Background    | desktop image | mobile image
+ *   Title         | one line per paragraph (each line gets the gradient)
+ *   Caption       | Visualize your dream home
+ *   Download text | Download our visualizer app now (desktop only)
+ *   Play store    | store badge image | store link | QR code image (optional)
+ *   App store     | store badge image | store link | QR code image (optional)
+ *                   (store rows render in authored order)
+ *   Video         | link to the video file
+ *
+ * @param {Element} block The block element
+ */
+
+const DEFAULT_VIDEO_LABEL = 'Phone screen showing the launch of Colour with Asian Paints Visualizer';
+
+const STORE_LABELS = ['play store', 'app store'];
+
+/** Splits a rich-text cell into its lines (paragraphs and line breaks). */
+function getLines(cell) {
+  const parts = cell.querySelector('p') ? [...cell.querySelectorAll('p')] : [cell];
+  return parts.flatMap((part) => {
+    const clone = part.cloneNode(true);
+    clone.querySelectorAll('br').forEach((br) => br.replaceWith('\n'));
+    return clone.textContent.split('\n');
+  }).map((line) => line.trim()).filter(Boolean);
+}
+
+function getLink(cell) {
+  const a = cell?.querySelector('a');
+  if (a) return a.href;
+  const text = cell?.textContent.trim();
+  return text || '';
+}
+
+function buildBackground(desktopImg, mobileImg, eager) {
+  const picture = createOptimizedPicture(mobileImg.src, '', eager, [{ width: '750' }]);
+  const desktop = createOptimizedPicture(desktopImg.src, '', eager, [
+    { media: '(min-width: 900px)', width: '2000' },
+    { width: '750' },
+  ]);
+  picture.prepend(...desktop.querySelectorAll('source[media]'));
+  const img = picture.querySelector('img');
+  if (eager) img.fetchPriority = 'high';
+
+  const bg = document.createElement('div');
+  bg.className = 'cwap-banner-bg';
+  bg.setAttribute('aria-hidden', 'true');
+  bg.append(picture);
+  return bg;
+}
+
+function buildStore(cells) {
+  const [, badgeCell, linkCell, qrCell] = cells;
+  const badgeImg = badgeCell?.querySelector('img');
+  const href = getLink(linkCell);
+  if (!badgeImg && !href) return null;
+
+  const item = document.createElement('li');
+  item.className = 'cwap-banner-store';
+
+  const qrImg = qrCell?.querySelector('img');
+  if (qrImg) {
+    const qr = createOptimizedPicture(qrImg.src, qrImg.alt || 'QR code to download the app', false, [{ width: '300' }]);
+    qr.classList.add('cwap-banner-qr');
+    item.append(qr);
+  }
+
+  const link = document.createElement(href ? 'a' : 'span');
+  link.className = 'cwap-banner-store-link';
+  if (href) {
+    link.href = href;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+  }
+  if (badgeImg) {
+    const badge = createOptimizedPicture(badgeImg.src, badgeImg.alt || 'Download the app', false, [{ width: '360' }]);
+    const img = badge.querySelector('img');
+    img.width = 180;
+    img.height = 53;
+    link.append(badge);
+  } else {
+    link.textContent = 'Download the app';
+  }
+  item.append(link);
+  return item;
+}
+
+function buildVideo(cell) {
+  const src = getLink(cell);
+  if (!src) return null;
+
+  const text = cell.textContent.trim();
+  const label = text && !/^(https?:)?\/\//.test(text) && !text.startsWith('/') ? text : DEFAULT_VIDEO_LABEL;
+
+  const media = document.createElement('div');
+  media.className = 'cwap-banner-media';
+
+  const video = document.createElement('video');
+  video.className = 'cwap-banner-video';
+  video.muted = true;
+  video.loop = true;
+  video.autoplay = true;
+  video.playsInline = true;
+  video.controls = true;
+  video.preload = 'none';
+  ['muted', 'loop', 'autoplay', 'playsinline'].forEach((attr) => video.setAttribute(attr, ''));
+  video.setAttribute('aria-label', label);
+  media.append(video);
+
+  // load the video only once the banner is close to the viewport
+  const observer = new IntersectionObserver((entries) => {
+    if (!entries.some((entry) => entry.isIntersecting)) return;
+    observer.disconnect();
+    video.src = src;
+    video.play().catch(() => { /* autoplay blocked: controls remain available */ });
+  }, { rootMargin: '200px' });
+  observer.observe(media);
+
+  return media;
+}
+
+/**
+ * On desktop, sizes the banner to the real space left below the header
+ * (viewport units can disagree with the window size under OS/browser zoom).
+ * Mobile keeps the CSS svh value so the banner doesn't jump with the URL bar.
+ */
+function fitToViewport(block) {
+  const desktop = window.matchMedia('(width >= 900px)');
+  let frame;
+  const update = () => {
+    frame = null;
+    if (!desktop.matches) {
+      block.style.removeProperty('--cwap-vh');
+      return;
+    }
+    const header = document.querySelector('header');
+    const headerHeight = header ? header.getBoundingClientRect().height : 0;
+    block.style.setProperty('--cwap-vh', `${Math.round(window.innerHeight - headerHeight)}px`);
+  };
+  const schedule = () => {
+    if (!frame) frame = requestAnimationFrame(update);
+  };
+  update();
+  window.addEventListener('resize', schedule);
+  desktop.addEventListener('change', schedule);
+}
+
+function decorateBanner(block) {
+  const rows = [...block.children];
+  const byLabel = (name) => rows.find((row) => rowLabel(row) === name);
+  const valueCell = (name) => byLabel(name)?.children[1];
+
+  const isFirstSection = block.closest('.section') === block.closest('main')?.querySelector('.section');
+
+  const inner = document.createElement('div');
+  inner.className = 'cwap-banner-inner';
+
+  const content = document.createElement('div');
+  content.className = 'cwap-banner-content';
+
+  const titleCell = valueCell('title');
+  if (titleCell) {
+    const title = document.createElement(isFirstSection ? 'h1' : 'h2');
+    title.className = 'cwap-banner-title';
+    getLines(titleCell).forEach((line) => {
+      const span = document.createElement('span');
+      span.textContent = line;
+      title.append(span, ' ');
+    });
+    content.append(title);
+  }
+
+  const caption = valueCell('caption')?.textContent.trim();
+  if (caption) {
+    const el = document.createElement(isFirstSection ? 'h2' : 'h3');
+    el.className = 'cwap-banner-caption';
+    el.textContent = caption;
+    content.append(el);
+  }
+
+  const downloadText = valueCell('download text')?.textContent.trim();
+  if (downloadText) {
+    const el = document.createElement('p');
+    el.className = 'cwap-banner-download';
+    el.textContent = downloadText;
+    content.append(el);
+  }
+
+  const stores = rows
+    .filter((row) => STORE_LABELS.includes(rowLabel(row)))
+    .map((row) => buildStore([...row.children]))
+    .filter(Boolean);
+  if (stores.length) {
+    const list = document.createElement('ul');
+    list.className = 'cwap-banner-stores';
+    list.append(...stores);
+    content.append(list);
+  }
+
+  inner.append(content);
+
+  const videoCell = valueCell('video');
+  const media = videoCell ? buildVideo(videoCell) : null;
+  if (media) inner.append(media);
+
+  const bgRow = byLabel('background');
+  const [desktopImg, mobileImg = desktopImg] = bgRow ? bgRow.querySelectorAll('img') : [];
+
+  block.replaceChildren();
+  if (desktopImg) block.append(buildBackground(desktopImg, mobileImg, isFirstSection));
+  block.append(inner);
+  fitToViewport(block);
+}
+
+/* ---------------------------------------------------------------------------
+ * cwap-carousel
+ * ------------------------------------------------------------------------- */
+
+/**
  * Builds one carousel slide from [icon] | [label] | [description] | [screenshot].
  * @param {Element[]} cells The authored cells after the row name
  * @returns {Element} The slide
@@ -31,23 +310,23 @@ function buildSlide(cells) {
   const screenshot = imageCells[imageCells.length - 1]?.querySelector('img');
   const [label, description] = textCells.map((cell) => cell.textContent.trim());
 
-  const card = createElement('div', 'mobile-app-slide-card');
+  const card = createElement('div', 'cwap-slide-card');
   if (icon) {
     const iconPicture = optimize(icon, [{ width: '150' }]);
     // the label next to the icon already names the feature
     iconPicture.querySelector('img').alt = '';
     card.append(iconPicture);
   }
-  if (label) card.append(createElement('span', 'mobile-app-slide-label', label));
+  if (label) card.append(createElement('span', 'cwap-slide-label', label));
 
-  const info = createElement('div', 'mobile-app-slide-info', card);
-  if (description) info.append(createElement('p', 'mobile-app-slide-text', description));
+  const info = createElement('div', 'cwap-slide-info', card);
+  if (description) info.append(createElement('p', 'cwap-slide-text', description));
 
-  const slide = createElement('div', 'mobile-app-slide', info);
+  const slide = createElement('div', 'cwap-slide', info);
   if (screenshot) {
     slide.append(createElement(
       'div',
-      'mobile-app-slide-image',
+      'cwap-slide-image',
       optimize(screenshot, [{ media: '(min-width: 992px)', width: '1400' }, { width: '1100' }]),
     ));
   }
@@ -63,35 +342,35 @@ function buildSlide(cells) {
  */
 function buildCarousel(heading, slides) {
   instance += 1;
-  const carousel = createElement('div', 'mobile-app-carousel');
+  const carousel = createElement('div', 'cwap-carousel');
   if (heading) {
     const title = heading.querySelector('h1, h2, h3, h4, h5, h6');
-    title?.querySelectorAll('strong, em').forEach((el) => el.classList.add('mobile-app-highlight'));
-    carousel.append(createElement('div', 'mobile-app-carousel-heading', ...heading.childNodes));
+    title?.querySelectorAll('strong, em').forEach((el) => el.classList.add('cwap-highlight'));
+    carousel.append(createElement('div', 'cwap-carousel-heading', ...heading.childNodes));
   }
 
-  const track = createElement('div', 'mobile-app-carousel-slides', ...slides);
-  track.id = `mobile-app-carousel-${instance}`;
+  const track = createElement('div', 'cwap-carousel-slides', ...slides);
+  track.id = `cwap-carousel-${instance}`;
   track.setAttribute('aria-live', 'off');
-  const stage = createElement('div', 'mobile-app-carousel-stage', track);
+  const stage = createElement('div', 'cwap-carousel-stage', track);
   stage.setAttribute('role', 'region');
   stage.setAttribute('aria-roledescription', 'carousel');
-  stage.setAttribute('aria-label', carousel.querySelector('.mobile-app-carousel-heading')?.textContent.trim() || 'Carousel');
+  stage.setAttribute('aria-label', carousel.querySelector('.cwap-carousel-heading')?.textContent.trim() || 'Carousel');
 
-  const prev = createElement('button', 'mobile-app-carousel-prev');
-  const next = createElement('button', 'mobile-app-carousel-next');
+  const prev = createElement('button', 'cwap-carousel-prev');
+  const next = createElement('button', 'cwap-carousel-next');
   [[prev, 'Previous slide'], [next, 'Next slide']].forEach(([button, label]) => {
     button.type = 'button';
     button.setAttribute('aria-label', label);
     button.setAttribute('aria-controls', track.id);
   });
 
-  const dots = createElement('div', 'mobile-app-carousel-dots');
+  const dots = createElement('div', 'cwap-carousel-dots');
   const dotButtons = slides.map((slide, i) => {
     slide.setAttribute('role', 'group');
     slide.setAttribute('aria-roledescription', 'slide');
     slide.setAttribute('aria-label', `${i + 1} of ${slides.length}`);
-    const dot = createElement('button', 'mobile-app-carousel-dot');
+    const dot = createElement('button', 'cwap-carousel-dot');
     dot.type = 'button';
     dot.setAttribute('aria-label', `Show slide ${i + 1}`);
     dot.setAttribute('aria-controls', track.id);
@@ -155,26 +434,9 @@ function buildCarousel(heading, slides) {
   return carousel;
 }
 
-/**
- * Loads and plays the video only once the section is close to the viewport.
- * @param {HTMLVideoElement} video The video element
- * @param {string} src The video URL
- */
-function lazyLoadVideo(video, src) {
-  const load = () => {
-    if (video.src) return;
-    video.src = src;
-    video.play?.().catch(() => { /* autoplay can be blocked; controls stay available */ });
-  };
-  if (!('IntersectionObserver' in window)) { load(); return; }
-  const observer = new IntersectionObserver((entries) => {
-    if (entries.some((entry) => entry.isIntersecting)) {
-      observer.disconnect();
-      load();
-    }
-  }, { rootMargin: '200px' });
-  observer.observe(video);
-}
+/* ---------------------------------------------------------------------------
+ * cwap-download
+ * ------------------------------------------------------------------------- */
 
 /**
  * Builds the "Download our visualizer app" band from
@@ -188,15 +450,15 @@ function buildDownload(cells, stores) {
   const textCell = cells.find((cell) => !cell.querySelector('img, a') && cell.textContent.trim());
   const videoLink = cells.map((cell) => cell.querySelector('a')).find(Boolean);
 
-  const text = createElement('div', 'mobile-app-download-text');
+  const text = createElement('div', 'cwap-download-text');
   if (logoImg) {
     const logo = optimize(logoImg, [{ width: '500' }]);
-    logo.classList.add('mobile-app-download-logo');
+    logo.classList.add('cwap-download-logo');
     text.append(logo);
   }
-  if (textCell) text.append(createElement('p', 'mobile-app-download-label', textCell.textContent.trim()));
+  if (textCell) text.append(createElement('p', 'cwap-download-label', textCell.textContent.trim()));
 
-  const links = createElement('div', 'mobile-app-download-stores');
+  const links = createElement('div', 'cwap-download-stores');
   stores.forEach((storeCells) => {
     const badge = storeCells.find((cell) => cell.querySelector('img'))?.querySelector('img');
     const href = storeCells.map((cell) => cell.querySelector('a')?.href).find(Boolean);
@@ -209,31 +471,28 @@ function buildDownload(cells, stores) {
   });
   if (links.children.length) text.append(links);
 
-  const band = createElement('div', 'mobile-app-download', createElement('div', 'mobile-app-download-panel', text));
+  const band = createElement('div', 'cwap-download', createElement('div', 'cwap-download-panel', text));
   if (videoLink) {
-    const video = document.createElement('video');
-    video.className = 'mobile-app-download-player';
-    Object.assign(video, {
-      controls: true, autoplay: true, muted: true, loop: true, playsInline: true, preload: 'none',
-    });
-    video.setAttribute('muted', '');
-    video.setAttribute('playsinline', '');
-    video.setAttribute('aria-label', videoLink.textContent.trim() || 'Colour with Asian Paints app video');
+    const video = createVideo('cwap-download-player', videoLink.textContent.trim() || 'Colour with Asian Paints app video');
     lazyLoadVideo(video, videoLink.href);
-    band.append(createElement('div', 'mobile-app-download-video', video));
+    band.append(createElement('div', 'cwap-download-video', video));
   }
   return band;
 }
 
+/* ---------------------------------------------------------------------------
+ * block
+ * ------------------------------------------------------------------------- */
+
 /**
- * Mobile app page block. Rows are named in their first cell:
- * - carousel | heading (bold text is the gradient line)
- * - slide | [icon] | label | description | [screenshot]
- * - download | [logo] | text | video link
- * - store | [badge] | store link (after a download row)
  * @param {Element} block The block element
  */
 export default function decorate(block) {
+  if (block.classList.contains('cwap-banner')) {
+    decorateBanner(block);
+    return;
+  }
+
   const parts = [];
   let heading = null;
   let slides = [];
@@ -251,7 +510,7 @@ export default function decorate(block) {
 
   [...block.children].forEach((row) => {
     const cells = [...row.children];
-    const key = cells[0]?.textContent.trim().toLowerCase();
+    const key = rowLabel(row);
     if (!KEYS.includes(key) || cells.length < 2) return;
     const rest = cells.slice(1);
 
@@ -260,6 +519,7 @@ export default function decorate(block) {
       heading = createElement('div', '');
       rest.forEach((cell) => heading.append(...cell.childNodes));
     } else if (key === 'slide') {
+      if (download) flush();
       slides.push(buildSlide(rest));
     } else if (key === 'download') {
       flush();
