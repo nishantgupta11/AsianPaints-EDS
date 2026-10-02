@@ -15,12 +15,22 @@ import { createOptimizedPicture } from '../../scripts/aem.js';
  *                   (store rows render in authored order)
  *   Video         | link to the video file | desktop phone frame | mobile phone frame (optional)
  *
+ * Any other row with images (e.g. "Colour Picker") is a full-width image section
+ * shown below the banner, in authored order:
+ *   Colour Picker | desktop image | mobile image (optional, defaults to the desktop image)
+ *
  * @param {Element} block The block element
  */
 
 const DEFAULT_VIDEO_LABEL = 'Phone screen showing the launch of Colour with Asian Paints Visualizer';
 
 const STORE_LABELS = ['play store', 'app store'];
+
+// rows that build the banner itself; any other row with images is an image section
+const BANNER_LABELS = ['background', 'title', 'caption', 'download text', ...STORE_LABELS, 'video'];
+
+// the image sections switch to the desktop image here, like the reference page
+const FEATURE_DESKTOP = '(min-width: 992px)';
 
 const rowLabel = (row) => row.children[0]?.textContent.trim().toLowerCase().replace(/\s+/g, ' ') || '';
 
@@ -56,6 +66,30 @@ function buildBackground(desktopImg, mobileImg, eager) {
   bg.setAttribute('aria-hidden', 'true');
   bg.append(picture);
   return bg;
+}
+
+/**
+ * Image section row: label | desktop image | mobile image. The whole component
+ * is authored as one image per layout; the label names it for screen readers
+ * unless the image has its own alt text.
+ */
+function buildFeature(row) {
+  const [desktopImg, mobileImg = desktopImg] = row.querySelectorAll('img');
+  if (!desktopImg) return null;
+  const label = row.children[0]?.textContent.trim() || '';
+  const alt = desktopImg.getAttribute('alt') || label;
+
+  const picture = createOptimizedPicture(mobileImg.src, alt, false, [{ width: '750' }]);
+  const desktop = createOptimizedPicture(desktopImg.src, alt, false, [
+    { media: FEATURE_DESKTOP, width: '2880' },
+    { width: '750' },
+  ]);
+  picture.prepend(...desktop.querySelectorAll('source[media]'));
+
+  const feature = document.createElement('div');
+  feature.className = 'cwap-banner-feature';
+  feature.append(picture);
+  return feature;
 }
 
 function buildStore(cells) {
@@ -241,8 +275,17 @@ export default function decorate(block) {
   const bgRow = byLabel('background');
   const [desktopImg, mobileImg = desktopImg] = bgRow ? bgRow.querySelectorAll('img') : [];
 
-  block.replaceChildren();
-  if (desktopImg) block.append(buildBackground(desktopImg, mobileImg, isFirstSection));
-  block.append(inner);
+  // the banner keeps its viewport height; image sections follow it at their own size
+  const hero = document.createElement('div');
+  hero.className = 'cwap-banner-hero';
+  if (desktopImg) hero.append(buildBackground(desktopImg, mobileImg, isFirstSection));
+  hero.append(inner);
+
+  const features = rows
+    .filter((row) => !BANNER_LABELS.includes(rowLabel(row)))
+    .map(buildFeature)
+    .filter(Boolean);
+
+  block.replaceChildren(hero, ...features);
   fitToViewport(block);
 }

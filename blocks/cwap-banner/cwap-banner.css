@@ -9,6 +9,11 @@
   padding: 0;
 }
 
+/* the next band starts right below, like the reference page */
+main > .section.cwap-banner-container {
+  margin-bottom: 0;
+}
+
 /* page font for the banner text and headings (site headings default to another font) */
 .cwap-banner,
 .cwap-banner :is(h1, h2, h3) {
@@ -23,13 +28,16 @@
   /* visible area below the fixed header: the banner never exceeds it */
   --cwap-vh: calc(100svh - var(--header-height, 0px));
 
+  color: var(--cwap-text);
+}
+
+.cwap-banner .cwap-banner-hero {
   position: relative;
   box-sizing: border-box;
   height: var(--cwap-vh);
   min-height: 480px;
   overflow: hidden;
   padding: 27px 0 20px;
-  color: var(--cwap-text);
 }
 
 /* background image with a fade to cream on mobile */
@@ -170,7 +178,7 @@
 @media (width >= 900px) {
   /* banner fills the viewport below the header; text keeps its design
      size, only the gaps and the phone adapt */
-  .cwap-banner {
+  .cwap-banner .cwap-banner-hero {
     --cwap-h: var(--cwap-vh);
 
     height: var(--cwap-h);
@@ -314,5 +322,45 @@
     width: 89.33%;
     height: 95.7%;
     border-radius: 12.9% / 6%;
+  }
+}
+
+/* =============================================
+   IMAGE SECTIONS (e.g. "Discover our new Color Picker Tool")
+   The whole component is one authored image per layout, on the reference's
+   full-width cream band. The crops below fit the authored images: they drop
+   the empty cream above the mobile text (rows 0-418 of 1624, so the text
+   starts at the top of the band like the reference) and the black strip
+   at the bottom of both images.
+   ============================================= */
+.cwap-banner .cwap-banner-feature {
+  background: var(--cwap-fade);
+}
+
+.cwap-banner .cwap-banner-feature picture {
+  display: block;
+  max-width: 430px;
+  aspect-ratio: 722 / 1163;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.cwap-banner .cwap-banner-feature img {
+  display: block;
+  width: 100%;
+  height: auto;
+
+  /* percentage margins follow the width: 418px of a 722px-wide image */
+  margin-top: -57.9%;
+}
+
+@media (width >= 992px) {
+  .cwap-banner .cwap-banner-feature picture {
+    max-width: 1440px;
+    aspect-ratio: 4320 / 1884;
+  }
+
+  .cwap-banner .cwap-banner-feature img {
+    margin-top: 0;
   }
 }

@@ -4,6 +4,11 @@ main > .section.cwap-mobile-app-container > div {
   padding: 0;
 }
 
+/* no gap above the carousel band, like the reference page */
+main > .section.cwap-mobile-app-container {
+  margin-top: 0;
+}
+
 .cwap-mobile-app {
   font-family: manrope, sans-serif;
   font-size: 14px;
