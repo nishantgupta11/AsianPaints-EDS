@@ -275,13 +275,6 @@
   }
 }
 
-/* short desktop screens: no room for the QR codes */
-@media (width >= 900px) and (height < 800px) {
-  .cwap-banner .cwap-banner-qr {
-    display: none;
-  }
-}
-
 @media (width >= 1200px) {
   .cwap-banner .cwap-banner-inner {
     gap: 15%;
@@ -291,6 +284,8 @@
 /* authored phone frame (as on the reference page): the frame image is the media
    background and the video plays on top of it, inside the frame's screen area */
 .cwap-banner .cwap-banner-media.has-frame {
+  /* reference size: 177 x 354 on mobile, 287 x 575 on desktop */
+  height: clamp(220px, calc(var(--cwap-vh) - 230px), 354px);
   border: 0;
   border-radius: 20px;
   background: var(--cwap-frame-mobile) center / contain no-repeat;
@@ -308,6 +303,7 @@
 
 @media (width >= 900px) {
   .cwap-banner .cwap-banner-media.has-frame {
+    height: min(575px, 100%);
     aspect-ratio: 287 / 575;
     background-image: var(--cwap-frame-desktop);
   }
