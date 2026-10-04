@@ -292,6 +292,12 @@ main > .section.cwap-banner-container {
   }
 }
 
+/* the page is already zoomed (set by the block when e.g. the site header styles
+   zoom the body): don't zoom the banner a second time */
+.cwap-banner[data-page-zoomed] .cwap-banner-hero {
+  zoom: 1;
+}
+
 /* authored phone frame (as on the reference page): the frame image is the media
    background and the video plays on top of it, inside the frame's screen area
    (video 158 x 338 at 10, 8 on mobile; 256 x 550 at 16, 12 on desktop) */

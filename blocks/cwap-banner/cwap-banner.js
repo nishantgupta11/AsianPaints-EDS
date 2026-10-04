@@ -188,6 +188,28 @@ function buildVideo(row) {
   return media;
 }
 
+/**
+ * The banner zooms out on smaller desktops like the reference page, which does it
+ * with a page-wide `body { zoom }`. When the page itself is already zoomed (e.g.
+ * the asianpaints.com header styles are on the page), the banner must not zoom
+ * a second time, so it is flagged and its own zoom is switched off in CSS.
+ */
+function syncPageZoom(block) {
+  let frame;
+  const update = () => {
+    frame = null;
+    let zoom = 1;
+    for (let el = block.parentElement; el; el = el.parentElement) {
+      zoom *= parseFloat(getComputedStyle(el).zoom) || 1;
+    }
+    block.toggleAttribute('data-page-zoomed', Math.abs(zoom - 1) > 0.001);
+  };
+  update();
+  window.addEventListener('resize', () => {
+    if (!frame) frame = requestAnimationFrame(update);
+  });
+}
+
 export default function decorate(block) {
   const rows = [...block.children];
   const byLabel = (name) => rows.find((row) => rowLabel(row) === name);
@@ -261,4 +283,5 @@ export default function decorate(block) {
     .filter(Boolean);
 
   block.replaceChildren(hero, ...features);
+  syncPageZoom(block);
 }
