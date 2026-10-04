@@ -24,6 +24,9 @@ main > .section.cwap-mobile-app-container {
 
 /* carousel ("A sneak peak of What's Inside") */
 .cwap-mobile-app .cwap-carousel {
+  /* left inset of the heading, slides and dots; set per desktop width below */
+  --cwap-inset: 18%;
+
   position: relative;
   padding-bottom: 31px;
   background: #fefcf7;
@@ -32,7 +35,7 @@ main > .section.cwap-mobile-app-container {
 .cwap-mobile-app .cwap-carousel-heading {
   position: absolute;
   top: 150px;
-  left: 18%;
+  left: var(--cwap-inset);
   z-index: 1;
 }
 
@@ -64,7 +67,7 @@ main > .section.cwap-mobile-app-container {
 .cwap-mobile-app .cwap-carousel-slides {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  padding-left: 18%;
+  padding-left: var(--cwap-inset);
   overflow: hidden;
   touch-action: pan-y;
 }
@@ -152,7 +155,7 @@ main > .section.cwap-mobile-app-container {
   display: block;
   width: 666px;
   max-width: none;
-  height: auto;
+  height: 594.48px;
 }
 
 .cwap-mobile-app .cwap-carousel-prev,
@@ -163,7 +166,7 @@ main > .section.cwap-mobile-app-container {
 .cwap-mobile-app .cwap-carousel-dots {
   position: absolute;
   top: 465px;
-  left: calc(18% + 5px);
+  left: calc(var(--cwap-inset) + 5px);
   display: flex;
   align-items: center;
   gap: 10px;
@@ -184,6 +187,56 @@ main > .section.cwap-mobile-app-container {
 .cwap-mobile-app .cwap-carousel-dot[aria-current='true'] {
   width: 40px;
   background: #fcc666;
+}
+
+/* desktop left inset, as on the reference page: 15% up to 1280px wide,
+   18% up to 1600px, 25% above */
+@media (width >= 992px) and (width <= 1280px) {
+  .cwap-mobile-app .cwap-carousel {
+    --cwap-inset: 15%;
+  }
+}
+
+@media (width >= 1601px) {
+  .cwap-mobile-app .cwap-carousel {
+    --cwap-inset: 25%;
+  }
+}
+
+/* smaller desktops: the reference page zooms out in these steps */
+@media (width >= 992px) and (width < 1100px) {
+  .cwap-mobile-app .cwap-carousel {
+    zoom: 0.7;
+  }
+}
+
+@media (width >= 1100px) and (width < 1200px) {
+  .cwap-mobile-app .cwap-carousel {
+    zoom: 0.75;
+  }
+}
+
+@media (width >= 1200px) and (width < 1280px) {
+  .cwap-mobile-app .cwap-carousel {
+    zoom: 0.8;
+  }
+}
+
+@media (width >= 1280px) and (width < 1366px) {
+  .cwap-mobile-app .cwap-carousel {
+    zoom: 0.85;
+  }
+}
+
+@media (width >= 1366px) and (width < 1440px) {
+  .cwap-mobile-app .cwap-carousel {
+    zoom: 0.9;
+  }
+}
+
+/* the page is already zoomed (see scripts/page-zoom.js): don't zoom twice */
+.cwap-mobile-app[data-page-zoomed] .cwap-carousel {
+  zoom: 1;
 }
 
 /* download band ("Download our visualizer app now") */
@@ -378,6 +431,7 @@ main > .section.cwap-mobile-app-container {
 
   .cwap-mobile-app .cwap-slide-image img {
     width: 520px;
+    height: auto;
   }
 
   .cwap-mobile-app .cwap-carousel-prev,

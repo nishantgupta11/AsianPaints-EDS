@@ -1,4 +1,5 @@
 import { createOptimizedPicture } from '../../scripts/aem.js';
+import syncPageZoom from '../../scripts/page-zoom.js';
 
 /**
  * CWAP ("Colour With Asian Paints") mobile-app block. Each row is named in its
@@ -308,4 +309,5 @@ export default function decorate(block) {
   flush();
 
   block.replaceChildren(...parts);
+  syncPageZoom(block);
 }
