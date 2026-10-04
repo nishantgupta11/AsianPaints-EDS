@@ -1,5 +1,4 @@
 import { createOptimizedPicture } from '../../scripts/aem.js';
-import syncPageZoom from '../../scripts/page-zoom.js';
 
 /**
  * CWAP Banner
@@ -187,6 +186,31 @@ function buildVideo(row) {
   observer.observe(media);
 
   return media;
+}
+
+/**
+ * Smaller desktops zoom out like the reference page, which does it with a
+ * page-wide `body { zoom }`. When the page itself is already zoomed (e.g. the
+ * asianpaints.com header styles are on the page), the block must not zoom a
+ * second time, so it gets a `data-page-zoomed` attribute and its CSS switches its
+ * own zoom off. Those styles can arrive after the block is decorated (the header
+ * loads later), so the check reruns whenever the block's wrapper changes size:
+ * a page zoom changes its width in CSS pixels, and so does resizing the window.
+ * Kept in this file so the block has no dependencies besides aem.js.
+ * @param {Element} block The block element
+ */
+function syncPageZoom(block) {
+  const update = () => {
+    let zoom = 1;
+    for (let el = block.parentElement; el; el = el.parentElement) {
+      zoom *= parseFloat(getComputedStyle(el).zoom) || 1;
+    }
+    block.toggleAttribute('data-page-zoomed', Math.abs(zoom - 1) > 0.001);
+  };
+  update();
+  const target = block.parentElement || block;
+  if ('ResizeObserver' in window) new ResizeObserver(update).observe(target);
+  else window.addEventListener('resize', update);
 }
 
 export default function decorate(block) {

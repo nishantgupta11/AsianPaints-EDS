@@ -234,7 +234,7 @@ main > .section.cwap-mobile-app-container {
   }
 }
 
-/* the page is already zoomed (see scripts/page-zoom.js): don't zoom twice */
+/* the page is already zoomed (see syncPageZoom in the JS): don't zoom twice */
 .cwap-mobile-app[data-page-zoomed] .cwap-carousel {
   zoom: 1;
 }
